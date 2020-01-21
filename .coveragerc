@@ -1,0 +1,3 @@
+[run]
+source = ./jexia_sdk
+data_file = .coverage
