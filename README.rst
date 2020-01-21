@@ -61,9 +61,9 @@ PR's or answer to your issues.
 Documentation
 =============
 
-The documentation is hosted `on Read the Docs <http://jexia-sdk.readthedocs.io/en/latest/>`_
+The documentation is hosted `on Read the Docs <http://jexia-sdk.readthedocs.io/en/latest/>`__
 
 
 Contribution
 ============
-Want to contribute! That's awesome! Check out `CONTRIBUTING.rst! <https://github.com/jexia/jexia-sdk/blob/master/CONTRIBUTING.rst>`_
+Want to contribute! That's awesome! Check out `CONTRIBUTING.rst! <https://github.com/jexia/jexia-sdk/blob/master/CONTRIBUTING.rst>`__
