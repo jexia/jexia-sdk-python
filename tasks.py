@@ -163,7 +163,7 @@ def dist(ctx):
     '''Package for distribution'''
     header(dist.__doc__)
     with ctx.cd(ROOT):
-        ctx.run('python setup.py bdist_wheel', pty=True)
+        ctx.run('python setup.py sdist', pty=True)
 
 
 @task(clean, deps, test, doc, qa, dist, default=True)
