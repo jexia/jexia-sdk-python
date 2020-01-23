@@ -130,7 +130,7 @@ class HTTPClient(object):
         :param int timeout: timeout of request, defaults to 10 seconds
         :param bool check_token: disable/enable access token checking before
             request
-        :param **params: query params for request
+        :param params: query params for request
         '''
         if check_token:
             self._check_token()
