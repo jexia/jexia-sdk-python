@@ -9,7 +9,5 @@ API
 HTTP client
 -----------
 
-.. autoclass:: jexia_sdk.http.HTTPClient
+.. automodule:: jexia_sdk.http
     :members:
-
-.. autoexception:: jexia_sdk.http.HTTPClientError

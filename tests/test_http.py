@@ -2,7 +2,8 @@ import mock
 import pytest
 import json
 
-from jexia_sdk.http import HTTPClient, HTTPClientError
+from requests.exceptions import HTTPError
+from jexia_sdk.http import HTTPClient, HTTPClientError, HTTPRequestError
 
 
 EXPIRED_TOKEN = ('eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiI0ZDBhZGQ4ZC'
@@ -33,7 +34,7 @@ class FakeResponse(object):
 
     def raise_for_status(self):
         if self._raise_for_status:
-            raise Exception('some-error')
+            raise HTTPError(response=self)
 
     def json(self):
         return json.loads(self.text)
@@ -68,9 +69,8 @@ def test_auth_management_failed(mock_req):
     mock_req.return_value = FakeResponse(status_code=500,
                                          raise_for_status=True)
     client = HTTPClient('test')
-    with pytest.raises(HTTPClientError) as excinfo:
+    with pytest.raises(HTTPRequestError):
         client.auth_management('test-email', 'test-password')
-    assert 'request failed with code 500: ' in str(excinfo.value)
 
 
 @mock.patch('requests.request')

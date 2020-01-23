@@ -4,13 +4,9 @@
 import json
 import logging
 import requests
+from requests.exceptions import HTTPError
 
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    # for Python 2.7
-    from urlparse import urlparse
-
+from six.moves.urllib.parse import urlencode
 import jwt
 
 
@@ -20,10 +16,36 @@ URLS = {
     'management': 'https://services.%(domain)s',
     'consumption': 'https://%(project)s.app.%(domain)s',
 }
+SECRETS = ['password', 'secret']
 
 
 class HTTPClientError(Exception):
+    '''
+    Basic exception for HTTPClient errors.
+    '''
     pass
+
+
+class HTTPRequestError(HTTPClientError):
+    '''
+    Class for HTTP errors if response contains status code 4xx or 5xx.
+
+    :param request_exc: `requests.exceptions.HTTPError` exception
+    '''
+
+    def __init__(self, request_exc):
+        self.response = request_exc.response
+        self.errors = list()
+        try:
+            for err in self.response.json():
+                self.errors.append('%s (req_id: %s)'
+                                   % (err['message'], err['request_id']))
+        except Exception:
+            self.errors.append(self.response.text)
+        super(HTTPRequestError, self).__init__(self.errors)
+
+    def __str__(self):
+        return '\n'.join(self.errors)
 
 
 class HTTPClient(object):
@@ -126,25 +148,32 @@ class HTTPClient(object):
         url = self.base_url + url
         LOG.debug("REQ: %s" % self._make_curl_command(
             url, method, headers, data, params))
-        res = requests.request(
-            method=method, url=url, timeout=timeout, json=data,
-            headers=headers, params=params, verify=self.ssl_check)
+        try:
+            res = requests.request(
+                method=method, url=url, timeout=timeout, json=data,
+                headers=headers, params=params, verify=self.ssl_check)
+        except Exception as err:
+            raise HTTPClientError(err)
         LOG.debug("RES '%s': %s" % (res.status_code, res.text))
         try:
             res.raise_for_status()
-        except Exception:
-            raise HTTPClientError("request failed with code %d: %s"
-                                  % (res.status_code, res.text))
+        except HTTPError as err:
+            raise HTTPRequestError(err)
         if method != 'DELETE':
             return res.json()
 
     def _make_curl_command(self, url, method, headers, data=None, params=None):
+        if data:
+            data = data.copy()
+            for secret in SECRETS:
+                if secret in data:
+                    data[secret] = '***'
         curl_cmd = "curl -v {headers} {data} -X {method} \"{url}{params}\""
         curl_headers = ["-H \"%s: %s\"" % (h, v) for h, v in headers.items()]
         curl_data = "-d '%s'" % json.dumps(data) if data else ""
         curl_params = ""
         if params:
-            curl_params = "?" + urlparse.urlencode(params)
+            curl_params = "?" + urlencode(params)
         return curl_cmd.format(headers=" ".join(curl_headers),
                                data=curl_data,
                                method=method,
