@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+import copy
 import json
 import logging
 import requests
@@ -164,7 +164,7 @@ class HTTPClient(object):
 
     def _make_curl_command(self, url, method, headers, data=None, params=None):
         if data:
-            data = data.copy()
+            data = copy.deepcopy(data)
             for secret in SECRETS:
                 if secret in data:
                     data[secret] = '***'
