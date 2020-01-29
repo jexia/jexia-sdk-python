@@ -159,7 +159,7 @@ class HTTPClient(object):
             res.raise_for_status()
         except HTTPError as err:
             raise HTTPRequestError(err)
-        if method != 'DELETE':
+        if method != 'DELETE' and res.text:
             return res.json()
 
     def _make_curl_command(self, url, method, headers, data=None, params=None):
