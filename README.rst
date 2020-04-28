@@ -17,6 +17,9 @@ Jexia Python SDK
 .. image:: https://img.shields.io/pypi/pyversions/jexia-sdk.svg
     :target: https://pypi.org/project/jexia-sdk
     :alt: Supported Python versions
+.. image:: https://img.shields.io/badge/chat-on%20discord-7289da.svg?sanitize=true
+    :target: https://chat.jexia.com
+    :alt: Chat on Discord
 
 This is the official Python SDK for interacting with Jexia projects.
 
